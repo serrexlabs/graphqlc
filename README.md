@@ -8,14 +8,12 @@ import { GraphQLc, gql } from './src'
  })
 
  const query = gql`
-
     query {
         user {
             name
             email
         }
     }
-
  `
  const variables = {
        name: "test"

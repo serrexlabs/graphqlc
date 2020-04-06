@@ -1,30 +1,35 @@
+import { CacheDriverInterface, getDefaultHttpDriver, HttpDriverInterface } from './adapaters';
+
 type Headers = {
     [key in string]: string;
 };
 
-interface ClientInterface {
-    execute<T>(): T;
-    abort(): void;
+export type Config = {
+    url: string;
+    headers?: Headers;
+};
+
+export class Client {
+    private http: HttpDriverInterface;
+    private config: Config;
+    private cache?: CacheDriverInterface;
+
+    constructor(config: Config, http: HttpDriverInterface, cache?: CacheDriverInterface) {
+        this.http = http;
+        this.config = config;
+        this.cache = cache;
+    }
+
+    public async query(query: string, variable: object, config: Config): Promise<string> {
+        return await this.execute(query, variable, config);
+    }
+
+    private async execute<T>(query: string, variable: object, config: Config): Promise<string> {
+        return await this.http.request();
+    }
 }
 
-export class Client implements ClientInterface {
-    private baseUrl: string;
-    private headers: Headers | undefined;
-
-    constructor(baseUrl: string, headers?: Headers) {
-        this.baseUrl = baseUrl;
-        this.headers = headers;
-    }
-
-    abort(): void {
-        return undefined;
-    }
-
-    execute<T>(): T {
-        return undefined;
-    }
-}
-
-export const createClient = <T extends ClientInterface>(): T => {
-    return new Client('');
+export const create = (config: Config): Client => {
+    const httpDriver = getDefaultHttpDriver(config);
+    return new Client(config, httpDriver);
 };
