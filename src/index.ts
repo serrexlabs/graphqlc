@@ -1,4 +1,4 @@
-import { CacheDriverInterface, getDefaultHttpDriver, HttpDriverInterface } from './adapaters';
+import { CacheDriverInterface, getDefaultHttpDriver, HttpDriverInterface } from './drivers';
 
 type Headers = {
     [key in string]: string;
@@ -20,12 +20,17 @@ export class Client {
         this.cache = cache;
     }
 
-    public async query(query: string, variable: object, config: Config): Promise<string> {
-        return await this.execute(query, variable, config);
+    public async query(query: string, variables: object, config?: Config): Promise<string> {
+        return await this.execute(query, variables, config);
     }
 
-    private async execute<T>(query: string, variable: object, config: Config): Promise<string> {
-        return await this.http.request();
+    private async execute<T>(query: string, variables: object, config?: Config): Promise<string> {
+        return await this.http.request(
+            JSON.stringify({
+                query: query,
+                variables,
+            }),
+        );
     }
 }
 

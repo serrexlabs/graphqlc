@@ -1,6 +1,6 @@
 {
   "name": "graphqlc",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "A simple graphql client with zero dependency",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

@@ -1,9 +1,8 @@
 import { Config } from '../index';
-import { NodeHttpDriver } from './nodeHttpDriver';
+import { NodeHttpDriver } from './node-http-driver';
 
 export interface HttpDriverInterface {
-    setHeader(header: string, value: string): void;
-    request(): string;
+    request(data: string): Promise<any>;
 }
 
 export interface CacheDriverInterface {
@@ -16,5 +15,5 @@ export const getDefaultHttpDriver = (config: Config): HttpDriverInterface => {
     }
 
     //TODO return browser of http driver
-    return require('./nodeHttpDriver');
+    return require('./node-http-driver');
 };
