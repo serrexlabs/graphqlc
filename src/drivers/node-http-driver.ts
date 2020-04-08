@@ -1,10 +1,9 @@
 import * as http from 'http';
 import * as https from 'https';
 import * as url from 'url';
-import * as zlib from 'zlib';
 
 import { HttpDriverInterface } from './index';
-import { Config } from '../index';
+import { Config } from '../config';
 
 export class NodeHttpDriver implements HttpDriverInterface {
     private config: Config;
@@ -14,14 +13,15 @@ export class NodeHttpDriver implements HttpDriverInterface {
         this.config = config;
     }
 
-    request(data: string): Promise<any> {
-        const parsed = url.parse(this.config.url);
+    request<T>(data: string): Promise<T> {
+        const apiUrl = this.config.url as string;
+        const parsed = url.parse(apiUrl);
         const protocol = parsed.protocol || 'http:';
         const httpClient = this.isHttps.test(protocol) ? https : http;
 
         return new Promise((resolve, reject) => {
-            const req = https.request(
-                this.config.url,
+            const req = httpClient.request(
+                apiUrl,
                 {
                     method: 'POST',
                     headers: {
@@ -33,7 +33,6 @@ export class NodeHttpDriver implements HttpDriverInterface {
                     let body = '';
                     res.on('data', (chunk: any) => {
                         body += chunk;
-                        console.log(body);
                     });
 
                     res.on('error', (err) => {

@@ -1,26 +1,54 @@
 Super simple graphql client
 
 ```ts
-import { GraphQLc, gql } from './src'
+import { create } from './src';
 
- const graphQLc = new GraphQLc("https:api.com/sd", {
-        Authorization: `Bearer ${token}`
- })
-
- const query = gql`
-    query {
-        user {
-            name
-            email
-        }
+const client = create({
+    url: 'https://api.graphql.jobs/',
+    headers: {
+        Authorization: `Bearer ${token}`   
     }
- `
- const variables = {
-       name: "test"
- }
+});
+ 
 
- const request = graphQLc(query, variables)
- const data = request.execute();
- request.abort();
+interface Response<T> {
+    readonly data: T;
+}
+
+interface CompanyResponse {
+    companies: Array<Company>;
+    remotes: Array<Remote>;
+}
+
+interface Company {
+    name: string;
+}
+
+interface Remote {
+    type: string;
+    slug: string;
+}
+
+const query = `query jobs {
+            remotes{
+                type,
+                slug
+            },
+            companies {
+                name
+            }
+        }`;
+
+const fetchData = async () => {
+    const {
+        data: { companies, remotes },
+    } = await client.query<Response<CompanyResponse>>(query, {});
+    console.log(companies[0].name);
+    console.log(remotes[0].type);
+};
+
+console.log('yooooo');
+
+fetchData();
 
 ```

@@ -1,13 +1,6 @@
 import { CacheDriverInterface, getDefaultHttpDriver, HttpDriverInterface } from './drivers';
-
-type Headers = {
-    [key in string]: string;
-};
-
-export type Config = {
-    url: string;
-    headers?: Headers;
-};
+import { Config, defaultConfig } from './config';
+import { merge } from './utils/merge';
 
 export class Client {
     private http: HttpDriverInterface;
@@ -20,12 +13,16 @@ export class Client {
         this.cache = cache;
     }
 
-    public async query(query: string, variables: object, config?: Config): Promise<string> {
-        return await this.execute(query, variables, config);
+    public async query<T>(query: string, variables: object, config?: Config): Promise<T> {
+        return await this.execute<T>(query, variables, config);
     }
 
-    private async execute<T>(query: string, variables: object, config?: Config): Promise<string> {
-        return await this.http.request(
+    private async execute<T>(query: string, variables: object, config?: Config): Promise<T> {
+        if (config?.url) {
+            delete config.url;
+        }
+
+        return await this.http.request<T>(
             JSON.stringify({
                 query: query,
                 variables,
@@ -35,6 +32,7 @@ export class Client {
 }
 
 export const create = (config: Config): Client => {
-    const httpDriver = getDefaultHttpDriver(config);
+    const configuration = merge(defaultConfig, config);
+    const httpDriver = getDefaultHttpDriver(configuration);
     return new Client(config, httpDriver);
 };

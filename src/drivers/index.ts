@@ -1,8 +1,8 @@
-import { Config } from '../index';
 import { NodeHttpDriver } from './node-http-driver';
+import { Config } from '../config';
 
 export interface HttpDriverInterface {
-    request(data: string): Promise<any>;
+    request<T>(data: string): Promise<T>;
 }
 
 export interface CacheDriverInterface {
